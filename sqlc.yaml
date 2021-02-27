@@ -1,0 +1,7 @@
+version: "1"
+packages:
+  - name: "gen"
+    path: "./gen"
+    queries: "./query"
+    schema: "./schema"
+    engine: mysql
