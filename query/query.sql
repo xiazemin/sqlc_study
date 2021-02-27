@@ -1,16 +1,27 @@
--- name: GetAuthor :one
-SELECT * FROM authors WHERE id=? and name=? LIMIT 1;
+-- name: GetOneAuthor :one
+SELECT * FROM authors where  bio=? and id in (?)  and name in (?)  limit 1;
+
 
 -- name: ListAuthors :many
-SELECT * FROM authors where id in ? ORDER BY name;
+SELECT * FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name;
 
--- name: CreateAuthor :exec
+
+/* name: ListAllAuthors :many */
+SELECT * FROM authors
+ORDER BY name;
+
+/* name: CreateAuthor :execresult */
 INSERT INTO authors (
-  name, bio
+  id,name,bio
 ) VALUES (
-  ?, ?
+  ?,?, ? 
 );
 
--- name: DeleteAuthor :exec
+/* name: DeleteAuthor :exec */
 DELETE FROM authors
 WHERE id = ?;
+
+/* name: DeleteAuthorIn :exec */
+DELETE FROM authors
+WHERE id in (?);
+

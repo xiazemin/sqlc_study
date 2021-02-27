@@ -6,24 +6,27 @@ package gen
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
-const createAuthor = `-- name: CreateAuthor :exec
+const createAuthor = `-- name: CreateAuthor :execresult
 INSERT INTO authors (
-  name, bio
+  id,name,bio
 ) VALUES (
-  ?, ?
+  ?,?, ? 
 )
 `
 
 type CreateAuthorParams struct {
+	ID int32
+
 	Name string
-	Bio  sql.NullString
+
+	Bio sql.NullString
 }
 
-func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) error {
-	_, err := q.db.ExecContext(ctx, createAuthor, arg.Name, arg.Bio)
-	return err
+func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createAuthor, arg.ID, arg.Name, arg.Bio)
 }
 
 const deleteAuthor = `-- name: DeleteAuthor :exec
@@ -32,32 +35,157 @@ WHERE id = ?
 `
 
 func (q *Queries) DeleteAuthor(ctx context.Context, id int32) error {
+
 	_, err := q.db.ExecContext(ctx, deleteAuthor, id)
 	return err
 }
 
-const getAuthor = `-- name: GetAuthor :one
-SELECT id, name, bio FROM authors WHERE id=? and name=? LIMIT 1
+const deleteAuthorIn = `-- name: DeleteAuthorIn :exec
+DELETE FROM authors
+WHERE id in (?)
 `
 
-type GetAuthorParams struct {
-	ID   int32
-	Name string
+func int32Slice2interface(l []int32) []interface{} {
+	v := make([]interface{}, len(l))
+	for i, val := range l {
+		v[i] = val
+
+	}
+	return v
 }
 
-func (q *Queries) GetAuthor(ctx context.Context, arg GetAuthorParams) (Author, error) {
-	row := q.db.QueryRowContext(ctx, getAuthor, arg.ID, arg.Name)
+// Replace the nth occurrence of old in s by new.
+func replaceNth(s, old, new string, n int) string {
+	i := 0
+	for m := 1; m <= n; m++ {
+		x := strings.Index(s[i:], old)
+		if x < 0 {
+			break
+		}
+		i += x
+		if m == n {
+			return s[:i] + new + s[i+len(old):]
+		}
+		i += len(old)
+	}
+	return s
+}
+
+func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
+
+	_, err := q.db.ExecContext(ctx, deleteAuthorIn, id)
+	return err
+}
+
+const getOneAuthor = `-- name: GetOneAuthor :one
+SELECT id, name, bio FROM authors where  bio=? and id in (?)  and name in (?)  limit 1
+`
+
+type GetOneAuthorParams struct {
+	Bio sql.NullString
+
+	ID []int32
+
+	Name []string
+}
+
+func stringSlice2interface(l []string) []interface{} {
+	v := make([]interface{}, len(l))
+	for i, val := range l {
+		v[i] = val
+
+	}
+	return v
+}
+
+func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Author, error) {
+
+	getOneAuthor := getOneAuthor
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.ID)-1; i++ {
+			param += ",?"
+		}
+		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
+	}
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.Name)-1; i++ {
+			param += ",?"
+		}
+		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
+	}
+
+	row := q.db.QueryRowContext(ctx, getOneAuthor, append(append([]interface{}{arg.Bio}, int32Slice2interface(arg.ID)...), stringSlice2interface(arg.Name)...)...)
 	var i Author
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
 }
 
-const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio FROM authors where id = ? ORDER BY name
+const listAllAuthors = `-- name: ListAllAuthors :many
+SELECT id, name, bio FROM authors
+ORDER BY name
 `
 
-func (q *Queries) ListAuthors(ctx context.Context, id int32) ([]Author, error) {
-	rows, err := q.db.QueryContext(ctx, listAuthors, id)
+func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
+
+	rows, err := q.db.QueryContext(ctx, listAllAuthors)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAuthors = `-- name: ListAuthors :many
+SELECT id, name, bio FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
+`
+
+type ListAuthorsParams struct {
+	Bio sql.NullString
+
+	ID []int32
+
+	Name []string
+}
+
+func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error) {
+
+	listAuthors := listAuthors
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.ID)-1; i++ {
+			param += ",?"
+		}
+		listAuthors = replaceNth(listAuthors, "(?)", "("+param+")", 1)
+	}
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.Name)-1; i++ {
+			param += ",?"
+		}
+		listAuthors = replaceNth(listAuthors, "(?)", "("+param+")", 1)
+	}
+
+	rows, err := q.db.QueryContext(ctx, listAuthors, append(append([]interface{}{arg.Bio}, int32Slice2interface(arg.ID)...), stringSlice2interface(arg.Name)...)...)
 	if err != nil {
 		return nil, err
 	}
