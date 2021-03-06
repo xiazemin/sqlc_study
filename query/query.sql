@@ -1,5 +1,14 @@
+-- name: GetAuthorsInCompanyById :many
+SELECT * FROM authors where company_id in ( select id from company where id in (?) );
+
+-- name: GetAuthorsInCompany :many
+SELECT * FROM authors where company_id in ( select id from company where id in (?) and name in (?) );
+
+-- name: GetAuthorsInOneCompany :many
+SELECT * FROM authors where company_id in ( select id from company where id = ? );
+
 -- name: GetOneAuthor :one
-SELECT * FROM authors where  bio=? and id in (?)  and name in (?)  limit 1;
+SELECT * FROM authors where  id in (?)  and bio=? and  name in (?)  limit 1;
 
 
 -- name: ListAuthors :many

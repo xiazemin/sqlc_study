@@ -7,7 +7,13 @@ import (
 )
 
 type Author struct {
+	ID        int32
+	Name      string
+	Bio       sql.NullString
+	CompanyID sql.NullInt32
+}
+
+type Company struct {
 	ID   int32
 	Name string
-	Bio  sql.NullString
 }

@@ -19,7 +19,16 @@ func main() {
 
 	queries := gen.New(db)
 
-	authors, err := queries.ListAuthors(context.Background(), gen.ListAuthorsParams{
+	authors, err := queries.GetAuthorsInCompany(context.Background(), gen.GetAuthorsInCompanyParams{
+		ID:   []int32{0, 1},
+		Name: []string{"a"},
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(authors)
+
+	authors, err = queries.ListAuthors(context.Background(), gen.ListAuthorsParams{
 		ID:   []int32{4, 12, 10},
 		Name: []string{"Brian Kernighan"},
 		Bio:  sql.NullString{String: "Co-author of The C Programming Language and The Go Programming Language", Valid: true},

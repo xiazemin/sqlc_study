@@ -26,6 +26,9 @@ type CreateAuthorParams struct {
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (sql.Result, error) {
+
+	createAuthor := createAuthor
+
 	return q.db.ExecContext(ctx, createAuthor, arg.ID, arg.Name, arg.Bio)
 }
 
@@ -73,17 +76,21 @@ func replaceNth(s, old, new string, n int) string {
 
 func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 
-	_, err := q.db.ExecContext(ctx, deleteAuthorIn, id)
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	deleteAuthorIn := replaceNth(deleteAuthorIn, "(?)", "("+param+")", 1)
+
+	_, err := q.db.ExecContext(ctx, deleteAuthorIn, int32Slice2interface(id)...)
 	return err
 }
 
-const getOneAuthor = `-- name: GetOneAuthor :one
-SELECT id, name, bio FROM authors where  bio=? and id in (?)  and name in (?)  limit 1
+const getAuthorsInCompany = `-- name: GetAuthorsInCompany :many
+SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id in (?) and name in (?) )
 `
 
-type GetOneAuthorParams struct {
-	Bio sql.NullString
-
+type GetAuthorsInCompanyParams struct {
 	ID []int32
 
 	Name []string
@@ -96,6 +103,137 @@ func stringSlice2interface(l []string) []interface{} {
 
 	}
 	return v
+}
+
+func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompanyParams) ([]Author, error) {
+
+	getAuthorsInCompany := getAuthorsInCompany
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.ID)-1; i++ {
+			param += ",?"
+		}
+		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "("+param+")", 1)
+	}
+
+	{
+		param := "?"
+		for i := 0; i < len(arg.Name)-1; i++ {
+			param += ",?"
+		}
+		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "("+param+")", 1)
+	}
+
+	rows, err := q.db.QueryContext(ctx, getAuthorsInCompany, append(int32Slice2interface(arg.ID), stringSlice2interface(arg.Name)...)...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuthorsInCompanyById = `-- name: GetAuthorsInCompanyById :many
+SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id in (?) )
+`
+
+func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Author, error) {
+
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	getAuthorsInCompanyById := replaceNth(getAuthorsInCompanyById, "(?)", "("+param+")", 1)
+
+	rows, err := q.db.QueryContext(ctx, getAuthorsInCompanyById, int32Slice2interface(id)...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuthorsInOneCompany = `-- name: GetAuthorsInOneCompany :many
+SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id = ? )
+`
+
+func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Author, error) {
+
+	rows, err := q.db.QueryContext(ctx, getAuthorsInOneCompany, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOneAuthor = `-- name: GetOneAuthor :one
+SELECT id, name, bio, company_id FROM authors where  id in (?)  and bio=? and  name in (?)  limit 1
+`
+
+type GetOneAuthorParams struct {
+	ID []int32
+
+	Bio sql.NullString
+
+	Name []string
 }
 
 func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Author, error) {
@@ -118,14 +256,19 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
 	}
 
-	row := q.db.QueryRowContext(ctx, getOneAuthor, append(append([]interface{}{arg.Bio}, int32Slice2interface(arg.ID)...), stringSlice2interface(arg.Name)...)...)
+	row := q.db.QueryRowContext(ctx, getOneAuthor, append(append(int32Slice2interface(arg.ID), arg.Bio), stringSlice2interface(arg.Name)...)...)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Bio,
+		&i.CompanyID,
+	)
 	return i, err
 }
 
 const listAllAuthors = `-- name: ListAllAuthors :many
-SELECT id, name, bio FROM authors
+SELECT id, name, bio, company_id FROM authors
 ORDER BY name
 `
 
@@ -139,7 +282,12 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 	var items []Author
 	for rows.Next() {
 		var i Author
-		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -154,7 +302,7 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
+SELECT id, name, bio, company_id FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
 `
 
 type ListAuthorsParams struct {
@@ -193,7 +341,12 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 	var items []Author
 	for rows.Next() {
 		var i Author
-		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
