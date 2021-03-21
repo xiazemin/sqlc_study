@@ -8,7 +8,7 @@ SELECT * FROM authors where company_id in ( select id from company where id in (
 SELECT * FROM authors where company_id in ( select id from company where id = ? );
 
 -- name: GetOneAuthor :one
-SELECT * FROM authors where  id in (?)  and bio=? and  name in (?)  limit 1;
+SELECT * FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1; 
 
 
 -- name: ListAuthors :many

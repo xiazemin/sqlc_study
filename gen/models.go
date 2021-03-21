@@ -10,7 +10,7 @@ type Author struct {
 	ID        int32
 	Name      string
 	Bio       sql.NullString
-	CompanyID sql.NullInt32
+	CompanyID int32
 }
 
 type Company struct {
