@@ -14,6 +14,7 @@ type Author struct {
 }
 
 type Company struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	CompanyName sql.NullString `json:"companyName"`
 }

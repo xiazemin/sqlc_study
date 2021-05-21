@@ -5,10 +5,23 @@ package gen
 
 import (
 	"context"
+	"database/sql"
 )
 
+const getCompanyName = `-- name: GetCompanyName :one
+select companyName from company where companyName =?
+`
+
+func (q *Queries) GetCompanyName(ctx context.Context, companyname sql.NullString) (sql.NullString, error) {
+
+	row := q.db.QueryRowContext(ctx, getCompanyName, companyname)
+	var companyName sql.NullString
+	err := row.Scan(&companyName)
+	return companyName, err
+}
+
 const listCompanyById = `-- name: ListCompanyById :many
-select id, name from company where id in (?)
+select id, name, companyName from company where id in (?)
 `
 
 func (q *Queries) ListCompanyById(ctx context.Context, id []int32) ([]Company, error) {
@@ -27,7 +40,7 @@ func (q *Queries) ListCompanyById(ctx context.Context, id []int32) ([]Company, e
 	var items []Company
 	for rows.Next() {
 		var i Company
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.CompanyName); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
