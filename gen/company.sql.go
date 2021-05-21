@@ -11,15 +11,6 @@ const listCompanyById = `-- name: ListCompanyById :many
 select id, name from company where id in (?)
 `
 
-func int32Slice2interface(l []int32) []interface{} {
-	v := make([]interface{}, len(l))
-	for i, val := range l {
-		v[i] = val
-
-	}
-	return v
-}
-
 func (q *Queries) ListCompanyById(ctx context.Context, id []int32) ([]Company, error) {
 
 	param := "?"

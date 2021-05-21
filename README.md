@@ -12,5 +12,13 @@ mysql> insert into authors (id,name,bio,company_id) values(15,'Brian','Brian',1)
  ~/go/bin/sqlc generate
 
 
+生成Interface
+    emit_interface: true
+
+生成mock
+go generate ./...
+
 参考：
 https://segmentfault.com/a/1190000022529075?utm_source=tag-newest
+
+

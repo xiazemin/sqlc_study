@@ -7,13 +7,13 @@ import (
 )
 
 type Author struct {
-	ID        int32
-	Name      string
-	Bio       sql.NullString
-	CompanyID int32
+	ID        int32          `json:"id"`
+	Name      string         `json:"name"`
+	Bio       sql.NullString `json:"bio"`
+	CompanyID int32          `json:"company_id"`
 }
 
 type Company struct {
-	ID   int32
-	Name string
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
 }

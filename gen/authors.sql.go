@@ -17,11 +17,11 @@ INSERT INTO authors (
 `
 
 type CreateAuthorParams struct {
-	ID int32
+	ID int32 `json:"id"`
 
-	Name string
+	Name string `json:"name"`
 
-	Bio sql.NullString
+	Bio sql.NullString `json:"bio"`
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (sql.Result, error) {
@@ -47,6 +47,15 @@ DELETE FROM authors
 WHERE id in (?)
 `
 
+func int32Slice2interface(l []int32) []interface{} {
+	v := make([]interface{}, len(l))
+	for i, val := range l {
+		v[i] = val
+
+	}
+	return v
+}
+
 func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 
 	param := "?"
@@ -64,9 +73,9 @@ SELECT id, name, bio, company_id FROM authors where company_id in ( select id fr
 `
 
 type GetAuthorsInCompanyParams struct {
-	ID []int32
+	ID []int32 `json:"id"`
 
-	Name []string
+	Name []string `json:"name"`
 }
 
 func stringSlice2interface(l []string) []interface{} {
@@ -202,13 +211,13 @@ SELECT id, name, bio, company_id FROM authors where  id in (?)  and bio=? and  n
 `
 
 type GetOneAuthorParams struct {
-	ID []int32
+	ID []int32 `json:"id"`
 
-	Bio sql.NullString
+	Bio sql.NullString `json:"bio"`
 
-	Name []string
+	Name []string `json:"name"`
 
-	CompanyID []int32
+	CompanyID []int32 `json:"company_id"`
 }
 
 func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Author, error) {
@@ -289,11 +298,11 @@ SELECT id, name, bio, company_id FROM authors where  bio=? and id in (?)  and na
 `
 
 type ListAuthorsParams struct {
-	Bio sql.NullString
+	Bio sql.NullString `json:"bio"`
 
-	ID []int32
+	ID []int32 `json:"id"`
 
-	Name []string
+	Name []string `json:"name"`
 }
 
 func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error) {
