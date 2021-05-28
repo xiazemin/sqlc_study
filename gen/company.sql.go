@@ -20,6 +20,38 @@ func (q *Queries) GetCompanyName(ctx context.Context, companyname sql.NullString
 	return companyName, err
 }
 
+const insertMulti = `-- name: InsertMulti :execresult
+insert into company (id,name,companyName) values (?,?,?),(?,?,?)
+`
+
+type InsertMultiParams struct {
+	ID int32 `json:"id"`
+
+	Name string `json:"name"`
+
+	CompanyName sql.NullString `json:"companyName"`
+
+	ID_2 int32 `json:"id_2"`
+
+	Name_2 string `json:"name_2"`
+
+	CompanyName_2 sql.NullString `json:"companyName_2"`
+}
+
+func (q *Queries) InsertMulti(ctx context.Context, arg InsertMultiParams) (sql.Result, error) {
+
+	insertMulti := insertMulti
+
+	return q.db.ExecContext(ctx, insertMulti,
+		arg.ID,
+		arg.Name,
+		arg.CompanyName,
+		arg.ID_2,
+		arg.Name_2,
+		arg.CompanyName_2,
+	)
+}
+
 const listCompanyById = `-- name: ListCompanyById :many
 select id, name, companyName from company where id in (?)
 `
