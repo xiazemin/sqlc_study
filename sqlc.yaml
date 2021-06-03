@@ -7,6 +7,7 @@ packages:
     queries: "./query"
     schema: "./schema"
     engine: mysql
+    dsn: root:@tcp(127.0.0.1:3306)/test
 overrides:
   - go_type: "int64"
     db_type: "bigint"
