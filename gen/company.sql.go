@@ -58,11 +58,13 @@ select id, name, companyName from company where id in (?)
 
 func (q *Queries) ListCompanyById(ctx context.Context, id []int32) ([]Company, error) {
 
-	param := "?"
-	for i := 0; i < len(id)-1; i++ {
-		param += ",?"
+	if len(id) > 0 {
+		param := "?"
+		for i := 0; i < len(id)-1; i++ {
+			param += ",?"
+		}
+		listCompanyById := replaceNth(listCompanyById, "(?)", "("+param+")", 1)
 	}
-	listCompanyById := replaceNth(listCompanyById, "(?)", "("+param+")", 1)
 
 	rows, err := q.db.QueryContext(ctx, listCompanyById, int32Slice2interface(id)...)
 	if err != nil {

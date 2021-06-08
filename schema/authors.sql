@@ -1,6 +1,7 @@
-CREATE TABLE authors (
-  id   INT PRIMARY KEY,
-  name TEXT NOT NULL,
-  bio  VARCHAR(255),
-  company_id INT NOT NULL
-);
+CREATE TABLE `authors` (
+  `id` int NOT NULL,
+  `name` text NOT NULL,
+  `bio` varchar(255) DEFAULT NULL,
+  `company_id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
