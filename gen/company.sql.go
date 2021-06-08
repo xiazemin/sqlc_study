@@ -6,6 +6,7 @@ package gen
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 const getCompanyName = `-- name: GetCompanyName :one
@@ -58,13 +59,14 @@ select id, name, companyName from company where id in (?)
 
 func (q *Queries) ListCompanyById(ctx context.Context, id []int32) ([]Company, error) {
 
-	if len(id) > 0 {
-		param := "?"
-		for i := 0; i < len(id)-1; i++ {
-			param += ",?"
-		}
-		listCompanyById := replaceNth(listCompanyById, "(?)", "("+param+")", 1)
+	if len(id) <= 0 {
+		return nil, fmt.Errorf("id length is invalid")
 	}
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	listCompanyById := replaceNth(listCompanyById, "(?)", "("+param+")", 1)
 
 	rows, err := q.db.QueryContext(ctx, listCompanyById, int32Slice2interface(id)...)
 	if err != nil {

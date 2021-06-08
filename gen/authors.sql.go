@@ -6,6 +6,7 @@ package gen
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 const createAuthor = `-- name: CreateAuthor :execresult
@@ -58,13 +59,14 @@ func int32Slice2interface(l []int32) []interface{} {
 
 func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 
-	if len(id) > 0 {
-		param := "?"
-		for i := 0; i < len(id)-1; i++ {
-			param += ",?"
-		}
-		deleteAuthorIn := replaceNth(deleteAuthorIn, "(?)", "("+param+")", 1)
+	if len(id) <= 0 {
+		return fmt.Errorf("id length is invalid")
 	}
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	deleteAuthorIn := replaceNth(deleteAuthorIn, "(?)", "("+param+")", 1)
 
 	_, err := q.db.ExecContext(ctx, deleteAuthorIn, int32Slice2interface(id)...)
 	return err
@@ -93,7 +95,10 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 
 	getAuthorsInCompany := getAuthorsInCompany
 
-	if len(arg.ID) > 0 {
+	if len(arg.ID) <= 0 {
+		return nil, fmt.Errorf("arg.ID length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
@@ -101,7 +106,10 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "("+param+")", 1)
 	}
 
-	if len(arg.Name) > 0 {
+	if len(arg.Name) <= 0 {
+		return nil, fmt.Errorf("arg.Name length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
@@ -142,13 +150,14 @@ SELECT id, name, bio, company_id FROM authors where company_id in ( select id fr
 
 func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Author, error) {
 
-	if len(id) > 0 {
-		param := "?"
-		for i := 0; i < len(id)-1; i++ {
-			param += ",?"
-		}
-		getAuthorsInCompanyById := replaceNth(getAuthorsInCompanyById, "(?)", "("+param+")", 1)
+	if len(id) <= 0 {
+		return nil, fmt.Errorf("id length is invalid")
 	}
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	getAuthorsInCompanyById := replaceNth(getAuthorsInCompanyById, "(?)", "("+param+")", 1)
 
 	rows, err := q.db.QueryContext(ctx, getAuthorsInCompanyById, int32Slice2interface(id)...)
 	if err != nil {
@@ -228,7 +237,10 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 
 	getOneAuthor := getOneAuthor
 
-	if len(arg.ID) > 0 {
+	if len(arg.ID) <= 0 {
+		return nil, fmt.Errorf("arg.ID length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
@@ -236,7 +248,10 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
 	}
 
-	if len(arg.Name) > 0 {
+	if len(arg.Name) <= 0 {
+		return nil, fmt.Errorf("arg.Name length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
@@ -244,7 +259,10 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
 	}
 
-	if len(arg.CompanyID) > 0 {
+	if len(arg.CompanyID) <= 0 {
+		return nil, fmt.Errorf("arg.CompanyID length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.CompanyID)-1; i++ {
 			param += ",?"
@@ -313,7 +331,10 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 
 	listAuthors := listAuthors
 
-	if len(arg.ID) > 0 {
+	if len(arg.ID) <= 0 {
+		return nil, fmt.Errorf("arg.ID length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
@@ -321,7 +342,10 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 		listAuthors = replaceNth(listAuthors, "(?)", "("+param+")", 1)
 	}
 
-	if len(arg.Name) > 0 {
+	if len(arg.Name) <= 0 {
+		return nil, fmt.Errorf("arg.Name length is invalid")
+	}
+	{
 		param := "?"
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
