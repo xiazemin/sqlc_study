@@ -3,6 +3,7 @@
 package gen
 
 import (
+	"database/sql"
 	"strings"
 )
 
@@ -21,4 +22,24 @@ func replaceNth(s, old, new string, n int) string {
 		i += len(old)
 	}
 	return s
+}
+
+//authors.sql   DeleteAuthorIn
+func int32Slice2interface(l []int32) []interface{} {
+	v := make([]interface{}, len(l))
+	for i, val := range l {
+		v[i] = val
+
+	}
+	return v
+}
+
+//authors.sql   GetAuthorsInCompany
+func stringSlice2interface(l []string) []interface{} {
+	v := make([]interface{}, len(l))
+	for i, val := range l {
+		v[i] = val
+
+	}
+	return v
 }
