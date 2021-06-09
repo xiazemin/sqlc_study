@@ -3,7 +3,6 @@
 package gen
 
 import (
-	"database/sql"
 	"strings"
 )
 
