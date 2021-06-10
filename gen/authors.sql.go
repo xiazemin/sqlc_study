@@ -220,7 +220,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 	getOneAuthor := getOneAuthor
 
 	if len(arg.ID) <= 0 {
-		return nil, fmt.Errorf("arg.ID length is invalid")
+		return Author{}, fmt.Errorf("arg.ID length is invalid")
 	}
 	{
 		param := "?"
@@ -231,7 +231,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 	}
 
 	if len(arg.Name) <= 0 {
-		return nil, fmt.Errorf("arg.Name length is invalid")
+		return Author{}, fmt.Errorf("arg.Name length is invalid")
 	}
 	{
 		param := "?"
@@ -242,7 +242,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 	}
 
 	if len(arg.CompanyID) <= 0 {
-		return nil, fmt.Errorf("arg.CompanyID length is invalid")
+		return Author{}, fmt.Errorf("arg.CompanyID length is invalid")
 	}
 	{
 		param := "?"
