@@ -17,6 +17,7 @@ type Querier interface {
 	GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Author, error)
 	GetCompanyName(ctx context.Context, companyname sql.NullString) (sql.NullString, error)
 	GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Author, error)
+	GetTotalSize(ctx context.Context, id []int32) (int64, error)
 	InsertMulti(ctx context.Context, arg InsertMultiParams) (sql.Result, error)
 	ListAllAuthors(ctx context.Context) ([]Author, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)

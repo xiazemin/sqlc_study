@@ -11,6 +11,7 @@ type Author struct {
 	Name      string         `json:"name"`
 	Bio       sql.NullString `json:"bio"`
 	CompanyID int32          `json:"company_id"`
+	Size      sql.NullInt64  `json:"size"`
 }
 
 type Company struct {

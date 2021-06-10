@@ -64,7 +64,7 @@ func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 }
 
 const getAuthorsInCompany = `-- name: GetAuthorsInCompany :many
-SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id in (?) and name in (?) )
+SELECT id, name, bio, company_id, size FROM authors where company_id in ( select id from company where id in (?) and name in (?) )
 `
 
 type GetAuthorsInCompanyParams struct {
@@ -112,6 +112,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 			&i.Name,
 			&i.Bio,
 			&i.CompanyID,
+			&i.Size,
 		); err != nil {
 			return nil, err
 		}
@@ -127,7 +128,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 }
 
 const getAuthorsInCompanyById = `-- name: GetAuthorsInCompanyById :many
-SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id in (?) )
+SELECT id, name, bio, company_id, size FROM authors where company_id in ( select id from company where id in (?) )
 `
 
 func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Author, error) {
@@ -154,6 +155,7 @@ func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Au
 			&i.Name,
 			&i.Bio,
 			&i.CompanyID,
+			&i.Size,
 		); err != nil {
 			return nil, err
 		}
@@ -169,7 +171,7 @@ func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Au
 }
 
 const getAuthorsInOneCompany = `-- name: GetAuthorsInOneCompany :many
-SELECT id, name, bio, company_id FROM authors where company_id in ( select id from company where id = ? )
+SELECT id, name, bio, company_id, size FROM authors where company_id in ( select id from company where id = ? )
 `
 
 func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Author, error) {
@@ -187,6 +189,7 @@ func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Autho
 			&i.Name,
 			&i.Bio,
 			&i.CompanyID,
+			&i.Size,
 		); err != nil {
 			return nil, err
 		}
@@ -202,7 +205,7 @@ func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Autho
 }
 
 const getOneAuthor = `-- name: GetOneAuthor :one
-SELECT id, name, bio, company_id FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1
+SELECT id, name, bio, company_id, size FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1
 `
 
 type GetOneAuthorParams struct {
@@ -259,12 +262,34 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		&i.Name,
 		&i.Bio,
 		&i.CompanyID,
+		&i.Size,
 	)
 	return i, err
 }
 
+const getTotalSize = `-- name: GetTotalSize :one
+SELECT sum(size) from authors WHERE id in (?)
+`
+
+func (q *Queries) GetTotalSize(ctx context.Context, id []int32) (int64, error) {
+
+	if len(id) <= 0 {
+		return 0, fmt.Errorf("id length is invalid")
+	}
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	getTotalSize := replaceNth(getTotalSize, "(?)", "("+param+")", 1)
+
+	row := q.db.QueryRowContext(ctx, getTotalSize, int32Slice2interface(id)...)
+	var sum int64
+	err := row.Scan(&sum)
+	return sum, err
+}
+
 const listAllAuthors = `-- name: ListAllAuthors :many
-SELECT id, name, bio, company_id FROM authors
+SELECT id, name, bio, company_id, size FROM authors
 ORDER BY name
 `
 
@@ -283,6 +308,7 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 			&i.Name,
 			&i.Bio,
 			&i.CompanyID,
+			&i.Size,
 		); err != nil {
 			return nil, err
 		}
@@ -298,7 +324,7 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio, company_id FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
+SELECT id, name, bio, company_id, size FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
 `
 
 type ListAuthorsParams struct {
@@ -348,6 +374,7 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 			&i.Name,
 			&i.Bio,
 			&i.CompanyID,
+			&i.Size,
 		); err != nil {
 			return nil, err
 		}

@@ -34,3 +34,5 @@ WHERE id = ?;
 DELETE FROM authors
 WHERE id in (?);
 
+/* name: GetTotalSize :one */
+SELECT sum(size) from authors WHERE id in (?);
