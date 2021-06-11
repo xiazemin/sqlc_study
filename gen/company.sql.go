@@ -21,6 +21,18 @@ func (q *Queries) GetCompanyName(ctx context.Context, companyname sql.NullString
 	return companyName, err
 }
 
+const getMaxCompanyID = `-- name: GetMaxCompanyID :one
+SELECT MAX(id) FROM company
+`
+
+func (q *Queries) GetMaxCompanyID(ctx context.Context) (int32, error) {
+
+	row := q.db.QueryRowContext(ctx, getMaxCompanyID)
+	var max int32
+	err := row.Scan(&max)
+	return max, err
+}
+
 const insertMulti = `-- name: InsertMulti :execresult
 insert into company (id,name,companyName) values (?,?,?),(?,?,?)
 `

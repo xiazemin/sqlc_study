@@ -11,9 +11,9 @@ import (
 
 const createAuthor = `-- name: CreateAuthor :execresult
 INSERT INTO authors (
-  id,name,bio
+  id,name,bio,company_id
 ) VALUES (
-  ?,?, ? 
+  ?,?, ?,1 
 )
 `
 
@@ -204,6 +204,18 @@ func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Autho
 	return items, nil
 }
 
+const getMaxID = `-- name: GetMaxID :one
+SELECT MAX(id) FROM authors
+`
+
+func (q *Queries) GetMaxID(ctx context.Context) (int32, error) {
+
+	row := q.db.QueryRowContext(ctx, getMaxID)
+	var max int32
+	err := row.Scan(&max)
+	return max, err
+}
+
 const getOneAuthor = `-- name: GetOneAuthor :one
 SELECT id, name, bio, company_id, size FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1
 `
@@ -268,7 +280,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 }
 
 const getTotalSize = `-- name: GetTotalSize :one
-SELECT sum(size) from authors WHERE id in (?)
+SELECT ifnull(sum(size),0) from authors WHERE id in (?)
 `
 
 func (q *Queries) GetTotalSize(ctx context.Context, id []int32) (int64, error) {
@@ -283,7 +295,28 @@ func (q *Queries) GetTotalSize(ctx context.Context, id []int32) (int64, error) {
 	getTotalSize := replaceNth(getTotalSize, "(?)", "("+param+")", 1)
 
 	row := q.db.QueryRowContext(ctx, getTotalSize, int32Slice2interface(id)...)
-	var sum int64
+	var ifnull int64
+	err := row.Scan(&ifnull)
+	return ifnull, err
+}
+
+const getTotalSizeNull = `-- name: GetTotalSizeNull :one
+SELECT sum(size) from authors WHERE id in (?)
+`
+
+func (q *Queries) GetTotalSizeNull(ctx context.Context, id []int32) (sql.NullInt64, error) {
+
+	if len(id) <= 0 {
+		return sql.NullInt64{}, fmt.Errorf("id length is invalid")
+	}
+	param := "?"
+	for i := 0; i < len(id)-1; i++ {
+		param += ",?"
+	}
+	getTotalSizeNull := replaceNth(getTotalSizeNull, "(?)", "("+param+")", 1)
+
+	row := q.db.QueryRowContext(ctx, getTotalSizeNull, int32Slice2interface(id)...)
+	var sum sql.NullInt64
 	err := row.Scan(&sum)
 	return sum, err
 }

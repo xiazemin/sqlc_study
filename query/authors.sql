@@ -21,9 +21,9 @@ ORDER BY name;
 
 /* name: CreateAuthor :execresult */
 INSERT INTO authors (
-  id,name,bio
+  id,name,bio,company_id
 ) VALUES (
-  ?,?, ? 
+  ?,?, ?,1 
 );
 
 /* name: DeleteAuthor :exec */
@@ -35,4 +35,10 @@ DELETE FROM authors
 WHERE id in (?);
 
 /* name: GetTotalSize :one */
+SELECT ifnull(sum(size),0) from authors WHERE id in (?);
+
+/* name: GetTotalSizeNull :one */
 SELECT sum(size) from authors WHERE id in (?);
+
+/* name: GetMaxID :one */
+SELECT MAX(id) FROM authors ;

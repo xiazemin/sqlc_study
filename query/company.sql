@@ -12,3 +12,6 @@ select * from company where id > ? AND  id < ?;
 
 /*  name: Companys :execresult */
 select * from company where id BETWEEN ? AND ?;
+
+/* name: GetMaxCompanyID :one */
+SELECT MAX(id) FROM company ;
