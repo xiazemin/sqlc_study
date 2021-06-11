@@ -22,14 +22,33 @@ go generate ./...
 https://segmentfault.com/a/1190000022529075?utm_source=tag-newest
 
 
+mysql> select * from authors;
++----+-----------------+-------------------------------------------------------------------------+------------+------+-----------+-------------+-------+--------------+
+| id | name            | bio                                                                     | company_id | size | empty_col | default_col | size1 | default_col1 |
++----+-----------------+-------------------------------------------------------------------------+------------+------+-----------+-------------+-------+--------------+
+|  1 | a               | a                                                                       |          1 |    1 |      NULL |           0 |  NULL |            1 |
+|  2 | b               | b                                                                       |          2 | NULL |      NULL |           0 |  NULL |            0 |
+| 10 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 11 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 12 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 13 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 14 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 15 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 16 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 17 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 18 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 19 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 20 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 21 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
+| 22 | Brian Kernighan | Co-author of The C Programming Language and The Go Programming Language |          1 | NULL |      NULL |           0 |  NULL |            0 |
++----+-----------------+-------------------------------------------------------------------------+------------+------+-----------+-------------+-------+--------------+
+
+
 使用聚合函数的情况下
 
-结论：如果一个字段是not null ，只有在数据库里这个字段是空的情况下会报错，问题：是不是应该加column的同时给历史数据加默认值？也可以不加
 
-如果NOT NULL，但是没有插入数据，且没有命中会返回 NULL （出现在新增字段的场景，或者数据库初始化的场景） //只有这种场景会报错
-                            命中了 返回默认值
-              如果插入数据了，没有命中会返回默认值
-                            命中了 返回默认值
+如果NOT NULL，没有命中会返回 NULL ,且走了索引才会，in 不会
+             命中了 返回默认值
 如果DEFAULT NULL，但是没有插入数据，且没有命中会返回NULL  用了sql.null不会报错
                             命中了 返回NULL
               如果插入数据了，没有命中会返回NULL

@@ -40,6 +40,9 @@ func main() {
 	ret1, err := queries.GetMax_default_col(context.Background(), 1234789699)
 	//0 sql: Scan error on column index 0, name "max(default_col)": converting NULL to int32 is unsupported
 	fmt.Println("GetMax_default_col", ret1, err)
+	ret2, err := queries.GetMax_default_col1(context.Background(), 1234789699)
+	//GetMax_default_col1 id not exist ,exist value 0 sql: Scan error on column index 0, name "max(default_col1)": converting NULL to int32 is unsupported
+	fmt.Println("GetMax_default_col1 id not exist ,exist value", ret2, err)
 	ret1, err = queries.GetMax_default_col(context.Background(), 1)
 	fmt.Println("GetMax_default_col ID exist", ret1, err)
 	ret, err := queries.GetMax_empty_col(context.Background(), 1234789699)

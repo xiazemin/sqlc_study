@@ -19,6 +19,7 @@ type Querier interface {
 	GetMaxCompanyID(ctx context.Context) (int32, error)
 	GetMaxID(ctx context.Context) (int32, error)
 	GetMax_default_col(ctx context.Context, id int32) (int32, error)
+	GetMax_default_col1(ctx context.Context, id int32) (int32, error)
 	GetMax_empty_col(ctx context.Context, id int32) (sql.NullInt32, error)
 	GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Author, error)
 	GetTotalSize(ctx context.Context, id []int32) (int64, error)
