@@ -52,6 +52,9 @@ SELECT max(size1) from authors WHERE id = ?;
 /* name: GetMaxID :one */
 SELECT MAX(id) FROM authors ;
 
+/* name: GetLargestID :one */
+SELECT id FROM authors order by id desc limit 1;
+
 /* name: GetMax_empty_col :one */
 select max(empty_col) from authors where id =? ;
 

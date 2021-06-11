@@ -216,14 +216,26 @@ func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Autho
 	return items, nil
 }
 
+const getLargestID = `-- name: GetLargestID :one
+SELECT id FROM authors order by id desc limit 1
+`
+
+func (q *Queries) GetLargestID(ctx context.Context) (int32, error) {
+
+	row := q.db.QueryRowContext(ctx, getLargestID)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getMaxID = `-- name: GetMaxID :one
 SELECT MAX(id) FROM authors
 `
 
-func (q *Queries) GetMaxID(ctx context.Context) (int32, error) {
+func (q *Queries) GetMaxID(ctx context.Context) (sql.NullInt32, error) {
 
 	row := q.db.QueryRowContext(ctx, getMaxID)
-	var max int32
+	var max sql.NullInt32
 	err := row.Scan(&max)
 	return max, err
 }
@@ -232,10 +244,10 @@ const getMax_default_col = `-- name: GetMax_default_col :one
 select max(default_col) from authors where id =?
 `
 
-func (q *Queries) GetMax_default_col(ctx context.Context, id int32) (int32, error) {
+func (q *Queries) GetMax_default_col(ctx context.Context, id int32) (sql.NullInt32, error) {
 
 	row := q.db.QueryRowContext(ctx, getMax_default_col, id)
-	var max int32
+	var max sql.NullInt32
 	err := row.Scan(&max)
 	return max, err
 }
@@ -244,10 +256,10 @@ const getMax_default_col1 = `-- name: GetMax_default_col1 :one
 select max(default_col1) from authors where id =?
 `
 
-func (q *Queries) GetMax_default_col1(ctx context.Context, id int32) (int32, error) {
+func (q *Queries) GetMax_default_col1(ctx context.Context, id int32) (sql.NullInt32, error) {
 
 	row := q.db.QueryRowContext(ctx, getMax_default_col1, id)
-	var max int32
+	var max sql.NullInt32
 	err := row.Scan(&max)
 	return max, err
 }

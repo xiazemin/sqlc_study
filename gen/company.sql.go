@@ -25,10 +25,10 @@ const getMaxCompanyID = `-- name: GetMaxCompanyID :one
 SELECT MAX(id) FROM company
 `
 
-func (q *Queries) GetMaxCompanyID(ctx context.Context) (int32, error) {
+func (q *Queries) GetMaxCompanyID(ctx context.Context) (sql.NullInt32, error) {
 
 	row := q.db.QueryRowContext(ctx, getMaxCompanyID)
-	var max int32
+	var max sql.NullInt32
 	err := row.Scan(&max)
 	return max, err
 }
