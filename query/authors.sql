@@ -37,8 +37,23 @@ WHERE id in (?);
 /* name: GetTotalSize :one */
 SELECT ifnull(sum(size),0) from authors WHERE id in (?);
 
-/* name: GetTotalSizeNull :one */
+/* name: GetTotalSizeNullIn :one */
 SELECT sum(size) from authors WHERE id in (?);
+
+/* name: GetTotalSize1NullIn :one */
+SELECT sum(size1) from authors WHERE id in (?);
+
+/* name: GetTotalSizeNull :one */
+SELECT sum(size) from authors WHERE id =?;
+
+/* name: GetTotalSize1Null :one */
+SELECT max(size1) from authors WHERE id = ?;
 
 /* name: GetMaxID :one */
 SELECT MAX(id) FROM authors ;
+
+/* name: GetMax_empty_col :one */
+select max(empty_col) from authors where id =? ;
+
+/* name: GetMax_default_col :one */
+select max(default_col) from authors where id =? ;
