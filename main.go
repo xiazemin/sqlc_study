@@ -67,7 +67,7 @@ func main() {
 		fmt.Println(err)
 	}
 	if _, err := queries.CreateAuthor(context.Background(), gen.CreateAuthorParams{
-		ID:   1 + int32(maxID),
+		ID:   1 + int32(maxID.Int32),
 		Name: "Brian Kernighan",
 		Bio:  sql.NullString{String: "Co-author of The C Programming Language and The Go Programming Language", Valid: true},
 	}); err != nil {

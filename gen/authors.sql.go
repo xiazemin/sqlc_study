@@ -57,7 +57,7 @@ func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 	for i := 0; i < len(id)-1; i++ {
 		param += ",?"
 	}
-	deleteAuthorIn := replaceNth(deleteAuthorIn, "(?)", "("+param+")", 1)
+	deleteAuthorIn := replaceNth(deleteAuthorIn, "(?)", "( "+param+" )", 1)
 
 	_, err := q.db.ExecContext(ctx, deleteAuthorIn, int32Slice2interface(id)...)
 	return err
@@ -85,7 +85,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
 		}
-		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "("+param+")", 1)
+		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "( "+param+" )", 1)
 	}
 
 	if len(arg.Name) <= 0 {
@@ -96,7 +96,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
 		}
-		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "("+param+")", 1)
+		getAuthorsInCompany = replaceNth(getAuthorsInCompany, "(?)", "( "+param+" )", 1)
 	}
 
 	rows, err := q.db.QueryContext(ctx, getAuthorsInCompany, append(int32Slice2interface(arg.ID), stringSlice2interface(arg.Name)...)...)
@@ -144,7 +144,7 @@ func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Au
 	for i := 0; i < len(id)-1; i++ {
 		param += ",?"
 	}
-	getAuthorsInCompanyById := replaceNth(getAuthorsInCompanyById, "(?)", "("+param+")", 1)
+	getAuthorsInCompanyById := replaceNth(getAuthorsInCompanyById, "(?)", "( "+param+" )", 1)
 
 	rows, err := q.db.QueryContext(ctx, getAuthorsInCompanyById, int32Slice2interface(id)...)
 	if err != nil {
@@ -302,7 +302,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
 		}
-		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
+		getOneAuthor = replaceNth(getOneAuthor, "(?)", "( "+param+" )", 1)
 	}
 
 	if len(arg.Name) <= 0 {
@@ -313,7 +313,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
 		}
-		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
+		getOneAuthor = replaceNth(getOneAuthor, "(?)", "( "+param+" )", 1)
 	}
 
 	if len(arg.CompanyID) <= 0 {
@@ -324,7 +324,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		for i := 0; i < len(arg.CompanyID)-1; i++ {
 			param += ",?"
 		}
-		getOneAuthor = replaceNth(getOneAuthor, "(?)", "("+param+")", 1)
+		getOneAuthor = replaceNth(getOneAuthor, "(?)", "( "+param+" )", 1)
 	}
 
 	row := q.db.QueryRowContext(ctx, getOneAuthor, append(append(append(int32Slice2interface(arg.ID), arg.Bio), stringSlice2interface(arg.Name)...), int32Slice2interface(arg.CompanyID)...)...)
@@ -356,7 +356,7 @@ func (q *Queries) GetTotalSize(ctx context.Context, id []int32) (int64, error) {
 	for i := 0; i < len(id)-1; i++ {
 		param += ",?"
 	}
-	getTotalSize := replaceNth(getTotalSize, "(?)", "("+param+")", 1)
+	getTotalSize := replaceNth(getTotalSize, "(?)", "( "+param+" )", 1)
 
 	row := q.db.QueryRowContext(ctx, getTotalSize, int32Slice2interface(id)...)
 	var ifnull int64
@@ -389,7 +389,7 @@ func (q *Queries) GetTotalSize1NullIn(ctx context.Context, id []int32) (sql.Null
 	for i := 0; i < len(id)-1; i++ {
 		param += ",?"
 	}
-	getTotalSize1NullIn := replaceNth(getTotalSize1NullIn, "(?)", "("+param+")", 1)
+	getTotalSize1NullIn := replaceNth(getTotalSize1NullIn, "(?)", "( "+param+" )", 1)
 
 	row := q.db.QueryRowContext(ctx, getTotalSize1NullIn, int32Slice2interface(id)...)
 	var sum sql.NullInt32
@@ -422,7 +422,7 @@ func (q *Queries) GetTotalSizeNullIn(ctx context.Context, id []int32) (sql.NullI
 	for i := 0; i < len(id)-1; i++ {
 		param += ",?"
 	}
-	getTotalSizeNullIn := replaceNth(getTotalSizeNullIn, "(?)", "("+param+")", 1)
+	getTotalSizeNullIn := replaceNth(getTotalSizeNullIn, "(?)", "( "+param+" )", 1)
 
 	row := q.db.QueryRowContext(ctx, getTotalSizeNullIn, int32Slice2interface(id)...)
 	var sum sql.NullInt64
@@ -493,7 +493,7 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 		for i := 0; i < len(arg.ID)-1; i++ {
 			param += ",?"
 		}
-		listAuthors = replaceNth(listAuthors, "(?)", "("+param+")", 1)
+		listAuthors = replaceNth(listAuthors, "(?)", "( "+param+" )", 1)
 	}
 
 	if len(arg.Name) <= 0 {
@@ -504,7 +504,7 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 		for i := 0; i < len(arg.Name)-1; i++ {
 			param += ",?"
 		}
-		listAuthors = replaceNth(listAuthors, "(?)", "("+param+")", 1)
+		listAuthors = replaceNth(listAuthors, "(?)", "( "+param+" )", 1)
 	}
 
 	rows, err := q.db.QueryContext(ctx, listAuthors, append(append([]interface{}{arg.Bio}, int32Slice2interface(arg.ID)...), stringSlice2interface(arg.Name)...)...)
