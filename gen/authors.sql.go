@@ -64,7 +64,7 @@ func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 }
 
 const getAuthorsInCompany = `-- name: GetAuthorsInCompany :many
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors where company_id in ( select id from company where id in (?) and name in (?) )
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors where company_id in ( select id from company where id in (?) and name in (?) )
 `
 
 type GetAuthorsInCompanyParams struct {
@@ -117,6 +117,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 			&i.DefaultCol,
 			&i.Size1,
 			&i.DefaultCol1,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -132,7 +133,7 @@ func (q *Queries) GetAuthorsInCompany(ctx context.Context, arg GetAuthorsInCompa
 }
 
 const getAuthorsInCompanyById = `-- name: GetAuthorsInCompanyById :many
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors where company_id in ( select id from company where id in (?) )
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors where company_id in ( select id from company where id in (?) )
 `
 
 func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Author, error) {
@@ -164,6 +165,7 @@ func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Au
 			&i.DefaultCol,
 			&i.Size1,
 			&i.DefaultCol1,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -179,7 +181,7 @@ func (q *Queries) GetAuthorsInCompanyById(ctx context.Context, id []int32) ([]Au
 }
 
 const getAuthorsInOneCompany = `-- name: GetAuthorsInOneCompany :many
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors where company_id in ( select id from company where id = ? )
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors where company_id in ( select id from company where id = ? )
 `
 
 func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Author, error) {
@@ -202,6 +204,7 @@ func (q *Queries) GetAuthorsInOneCompany(ctx context.Context, id int32) ([]Autho
 			&i.DefaultCol,
 			&i.Size1,
 			&i.DefaultCol1,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -277,7 +280,7 @@ func (q *Queries) GetMax_empty_col(ctx context.Context, id int32) (sql.NullInt32
 }
 
 const getOneAuthor = `-- name: GetOneAuthor :one
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors where  id in (?)  and bio=? and  name in (?) and company_id in (?) limit 1
 `
 
 type GetOneAuthorParams struct {
@@ -339,6 +342,7 @@ func (q *Queries) GetOneAuthor(ctx context.Context, arg GetOneAuthorParams) (Aut
 		&i.DefaultCol,
 		&i.Size1,
 		&i.DefaultCol1,
+		&i.Type,
 	)
 	return i, err
 }
@@ -431,7 +435,7 @@ func (q *Queries) GetTotalSizeNullIn(ctx context.Context, id []int32) (sql.NullI
 }
 
 const listAllAuthors = `-- name: ListAllAuthors :many
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors
 ORDER BY name
 `
 
@@ -455,6 +459,7 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 			&i.DefaultCol,
 			&i.Size1,
 			&i.DefaultCol1,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -470,7 +475,7 @@ func (q *Queries) ListAllAuthors(ctx context.Context) ([]Author, error) {
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1 FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
+SELECT id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type FROM authors where  bio=? and id in (?)  and name in (?)  ORDER BY name
 `
 
 type ListAuthorsParams struct {
@@ -525,6 +530,7 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 			&i.DefaultCol,
 			&i.Size1,
 			&i.DefaultCol1,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}

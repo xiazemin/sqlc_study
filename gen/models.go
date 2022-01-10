@@ -4,7 +4,27 @@ package gen
 
 import (
 	"database/sql"
+	"fmt"
 )
+
+type AuthorsType string
+
+const (
+	AuthorsTypeHuLianWangYouXiRuanJian AuthorsType = "互联网/游戏/软件"
+	AuthorsTypeJiaoYuPeiXun            AuthorsType = "教育/培训"
+)
+
+func (e *AuthorsType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AuthorsType(s)
+	case string:
+		*e = AuthorsType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AuthorsType: %T", src)
+	}
+	return nil
+}
 
 type Author struct {
 	ID          int32          `json:"id"`
@@ -16,6 +36,7 @@ type Author struct {
 	DefaultCol  int32          `json:"default_col"`
 	Size1       sql.NullInt32  `json:"size1"`
 	DefaultCol1 int32          `json:"default_col1"`
+	Type        AuthorsType    `json:"type"`
 }
 
 type Company struct {
