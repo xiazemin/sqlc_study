@@ -10,8 +10,9 @@ import (
 type AuthorsType string
 
 const (
-	AuthorsTypeHuLianWangYouXiRuanJian AuthorsType = "互联网/游戏/软件"
-	AuthorsTypeJiaoYuPeiXun            AuthorsType = "教育/培训"
+	AuthorsTypeHuLianWangyouXiruanJian AuthorsType = "互联网/游戏/软件"
+	AuthorsTypeJiaoYupeiXun            AuthorsType = "教育/培训"
+	AuthorsType130ren                  AuthorsType = "1-30人"
 )
 
 func (e *AuthorsType) Scan(src interface{}) error {
