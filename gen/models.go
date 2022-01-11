@@ -13,7 +13,7 @@ const (
 	AuthorsTypeHuLianWangyouXiruanJian AuthorsType = "互联网/游戏/软件"
 	AuthorsTypeJiaoYupeiXun            AuthorsType = "教育/培训"
 	AuthorsType130ren                  AuthorsType = "1-30人"
-	AuthorsTypeNULL                    AuthorsType = ""
+	AuthorsTypeNULL                    AuthorsType = "null"
 )
 
 func (e *AuthorsType) Scan(src interface{}) error {
@@ -22,6 +22,10 @@ func (e *AuthorsType) Scan(src interface{}) error {
 		*e = AuthorsType(s)
 	case string:
 		*e = AuthorsType(s)
+
+	case nil:
+		*e = AuthorsTypeNULL
+
 	default:
 		return fmt.Errorf("unsupported scan type for AuthorsType: %T", src)
 	}
