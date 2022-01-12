@@ -32,17 +32,43 @@ func (e *AuthorsType) Scan(src interface{}) error {
 	return nil
 }
 
+type AuthorsType1 string
+
+const (
+	AuthorsType1HuLianWangyouXiruanJian AuthorsType1 = "互联网/游戏/软件"
+	AuthorsType1JiaoYupeiXun            AuthorsType1 = "教育/培训"
+	AuthorsType1130ren                  AuthorsType1 = "1-30人"
+	AuthorsType1NULL                    AuthorsType1 = "null"
+)
+
+func (e *AuthorsType1) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AuthorsType1(s)
+	case string:
+		*e = AuthorsType1(s)
+
+	case nil:
+		*e = AuthorsType1NULL
+
+	default:
+		return fmt.Errorf("unsupported scan type for AuthorsType1: %T", src)
+	}
+	return nil
+}
+
 type Author struct {
-	ID          int32          `json:"id"`
-	Name        string         `json:"name"`
-	Bio         sql.NullString `json:"bio"`
-	CompanyID   int32          `json:"company_id"`
-	Size        sql.NullInt64  `json:"size"`
-	EmptyCol    sql.NullInt32  `json:"empty_col"`
-	DefaultCol  int32          `json:"default_col"`
-	Size1       sql.NullInt32  `json:"size1"`
-	DefaultCol1 int32          `json:"default_col1"`
-	Type        AuthorsType    `json:"type"`
+	ID            int32          `json:"id"`
+	Name          string         `json:"name"`
+	Bio           sql.NullString `json:"bio"`
+	CompanyID     int32          `json:"company_id"`
+	Size          sql.NullInt64  `json:"size"`
+	EmptyCol      sql.NullInt32  `json:"empty_col"`
+	DefaultCol    int32          `json:"default_col"`
+	Size1         sql.NullInt32  `json:"size1"`
+	DefaultCol1   int32          `json:"default_col1"`
+	Type          AuthorsType    `json:"type"`
+	typeOverrides sql.NullString `json:"type1"`
 }
 
 type Company struct {

@@ -24,3 +24,7 @@ overrides:
     db_type: "bigint"
   - go_type: "int8"
     db_type: "tinyint"
+  - column: "authors.type1"
+    go_type: "database/sql.NullString"
+rename:
+  type1: typeOverrides
