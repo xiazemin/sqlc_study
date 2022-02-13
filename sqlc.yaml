@@ -8,6 +8,10 @@ packages:
     schema: "./schema"
     engine: mysql
     dsn: root:@tcp(127.0.0.1:3306)/test
+    tables:
+     - authors
+     - company
+     - employee
   - name: "gorse"
     path: "./gorse/gen"
     emit_interface: true

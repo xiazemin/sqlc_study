@@ -31,6 +31,7 @@ type Querier interface {
 	InsertMulti(ctx context.Context, arg InsertMultiParams) (sql.Result, error)
 	ListAllAuthors(ctx context.Context) ([]Author, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
+	ListAuthorsOmit(ctx context.Context, arg ListAuthorsOmitParams) ([]Author, error)
 	ListCompanyById(ctx context.Context, id []int32) ([]Company, error)
 }
 

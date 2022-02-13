@@ -550,3 +550,53 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 	}
 	return items, nil
 }
+
+const listAuthorsOmit = `-- name: ListAuthorsOmit :many
+select id, name, bio, company_id, size, empty_col, default_col, size1, default_col1, type, type1 from authors where id=? and name=? or bio=?
+`
+
+type ListAuthorsOmitParams struct {
+	ID int32 `json:"id"`
+
+	Name string `json:"name"`
+
+	Bio sql.NullString `json:"bio"`
+}
+
+func (q *Queries) ListAuthorsOmit(ctx context.Context, arg ListAuthorsOmitParams) ([]Author, error) {
+
+	listAuthorsOmit := listAuthorsOmit
+
+	rows, err := q.db.QueryContext(ctx, listAuthorsOmit, arg.ID, arg.Name, arg.Bio)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Bio,
+			&i.CompanyID,
+			&i.Size,
+			&i.EmptyCol,
+			&i.DefaultCol,
+			&i.Size1,
+			&i.DefaultCol1,
+			&i.Type,
+			&i.typeOverrides,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
