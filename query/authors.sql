@@ -64,5 +64,5 @@ select max(default_col) from authors where id =? ;
 /* name: GetMax_default_col1 :one */
 select max(default_col1) from authors where id =? ;
 
-/* name: ListAuthorsOmit :many omit:[name,bio]*/
+/* name: ListAuthorsOmit :many omits:[name,bio]*/
 select * from authors where id=? and name=? or bio=?;
