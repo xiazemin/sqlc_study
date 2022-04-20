@@ -43,26 +43,19 @@ type InsertMultiParams struct {
 	Name string `json:"name"`
 
 	CompanyName sql.NullString `json:"companyName"`
-
-	ID_2 int32 `json:"id_2"`
-
-	Name_2 string `json:"name_2"`
-
-	CompanyName_2 sql.NullString `json:"companyName_2"`
 }
 
-func (q *Queries) InsertMulti(ctx context.Context, arg InsertMultiParams) (sql.Result, error) {
+func (q *Queries) InsertMulti(ctx context.Context, arg []InsertMultiParams) (sql.Result, error) {
 
-	insertMulti := insertMulti
-
-	return q.db.ExecContext(ctx, insertMulti,
-		arg.ID,
-		arg.Name,
-		arg.CompanyName,
-		arg.ID_2,
-		arg.Name_2,
-		arg.CompanyName_2,
-	)
+	//@xiazemin
+	insertMulti := repeatN(insertMulti, len(arg))
+	var args []interface{}
+	for i := 0; i < len(arg); i++ {
+		args = append(args, arg[i].ID)
+		args = append(args, arg[i].Name)
+		args = append(args, arg[i].CompanyName)
+	}
+	return q.db.ExecContext(ctx, insertMulti, args...)
 }
 
 const listCompanyById = `-- name: ListCompanyById :many

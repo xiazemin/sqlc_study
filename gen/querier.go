@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	BatchCreateAuthor(ctx context.Context, arg []BatchCreateAuthorParams) (sql.Result, error)
 	CreateAuthor(ctx context.Context, arg CreateAuthorParams) (sql.Result, error)
 	DeleteAuthor(ctx context.Context, id int32) error
 	DeleteAuthorIn(ctx context.Context, id []int32) error
@@ -28,7 +29,7 @@ type Querier interface {
 	GetTotalSize1NullIn(ctx context.Context, id []int32) (sql.NullInt32, error)
 	GetTotalSizeNull(ctx context.Context, id int32) (sql.NullInt64, error)
 	GetTotalSizeNullIn(ctx context.Context, id []int32) (sql.NullInt64, error)
-	InsertMulti(ctx context.Context, arg InsertMultiParams) (sql.Result, error)
+	InsertMulti(ctx context.Context, arg []InsertMultiParams) (sql.Result, error)
 	ListAllAuthors(ctx context.Context) ([]Author, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
 	ListAuthorsOmit(ctx context.Context, arg ListAuthorsOmitParams) ([]Author, error)

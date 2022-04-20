@@ -9,6 +9,37 @@ import (
 	"fmt"
 )
 
+const batchCreateAuthor = `-- name: BatchCreateAuthor :execresult
+INSERT INTO authors (
+  id,name,bio,company_id
+) VALUES (
+  ?,?, ?,1 
+),(
+  ?,?, ?,1 
+)
+`
+
+type BatchCreateAuthorParams struct {
+	ID int32 `json:"id"`
+
+	Name string `json:"name"`
+
+	Bio sql.NullString `json:"bio"`
+}
+
+func (q *Queries) BatchCreateAuthor(ctx context.Context, arg []BatchCreateAuthorParams) (sql.Result, error) {
+
+	//@xiazemin
+	batchCreateAuthor := repeatN(batchCreateAuthor, len(arg))
+	var args []interface{}
+	for i := 0; i < len(arg); i++ {
+		args = append(args, arg[i].ID)
+		args = append(args, arg[i].Name)
+		args = append(args, arg[i].Bio)
+	}
+	return q.db.ExecContext(ctx, batchCreateAuthor, args...)
+}
+
 const createAuthor = `-- name: CreateAuthor :execresult
 INSERT INTO authors (
   id,name,bio,company_id
@@ -41,6 +72,7 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id int32) error {
 
 	_, err := q.db.ExecContext(ctx, deleteAuthor, id)
 	return err
+
 }
 
 const deleteAuthorIn = `-- name: DeleteAuthorIn :exec
@@ -61,6 +93,7 @@ func (q *Queries) DeleteAuthorIn(ctx context.Context, id []int32) error {
 
 	_, err := q.db.ExecContext(ctx, deleteAuthorIn, int32Slice2interface(id)...)
 	return err
+
 }
 
 const getAuthorsInCompany = `-- name: GetAuthorsInCompany :many

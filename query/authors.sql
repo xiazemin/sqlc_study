@@ -1,3 +1,12 @@
+/* name: BatchCreateAuthor :execresult */
+INSERT INTO authors (
+  id,name,bio,company_id
+) VALUES (
+  ?,?, ?,1 
+),(
+  ?,?, ?,1 
+);
+
 -- name: GetAuthorsInCompanyById :many
 SELECT * FROM authors where company_id in ( select id from company where id in (?) );
 
