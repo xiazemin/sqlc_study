@@ -1,0 +1,3 @@
+[submodule "sqlc"]
+	path = sqlc
+	url = https://github.com/kyleconroy/sqlc
