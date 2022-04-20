@@ -26,14 +26,12 @@ func replaceNth(s, old, new string, n int) string {
 }
 
 var (
-	fullValues   = regexp.MustCompile("(VALUES|values|VALUE|value)\\((\\?|[\\w\\W]+)(,(\\?|[\\w\\W]+))*\\)(,\\((\\?|[\\w\\W]+)(,(\\?|[\\w\\W]+))*\\))*")
+	fullValues   = regexp.MustCompile("(VALUES|values|VALUE|value)[\\t\\s\\n]*\\([\\t\\s\\n]*(\\?|[\\w\\W]+)[\\t\\s\\n]*(,[\\t\\s\\n]*(\\?|[\\w\\W]+))*\\)[\\t\\s\\n]*(,[\\t\\s\\n]*\\((\\?|[\\w\\W]+)[\\t\\s\\n]*(,[\\t\\s\\n]*(\\?|[\\w\\W]+))*\\))*")
 	singleValues = regexp.MustCompile("\\((\\?|[\\w\\W]+)(,(\\?|[\\w\\W]+))*\\)")
 )
 
 func repeatN(val string, n int) string {
-	val = strings.Replace(val, "\t", " ", -1)
-	val = strings.Replace(val, "\n", " ", -1)
-	str := fullValues.FindString(strings.Replace(val, " ", "", -1))
+	str := fullValues.FindString(strings.Replace(strings.Replace(strings.Replace(val, "\t", "", -1), "\n", "", -1), " ", "", -1))
 	oneStr := singleValues.FindString(str)
 	values := strings.Split(oneStr, "),(")
 	if len(values) > 0 {

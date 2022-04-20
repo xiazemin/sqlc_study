@@ -1,10 +1,10 @@
 /* name: BatchCreateAuthor :execresult */
 INSERT INTO authors (
-  id,name,bio,company_id
+  id,name,bio,company_id,default_col,default_col1
 ) VALUES (
-  ?,?, ?,1 
+  ?,?, ?,1,?,2 
 ),(
-  ?,?, ?,1 
+  ?,?, ?,1,? ,2
 );
 
 -- name: GetAuthorsInCompanyById :many

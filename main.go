@@ -1,13 +1,13 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"sqlc/gen"
 
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/net/context"
 )
 
 func main() {
@@ -18,6 +18,19 @@ func main() {
 	defer db.Close()
 
 	queries := gen.New(db)
+
+	res, err := queries.BatchCreateAuthor(context.Background(), []gen.BatchCreateAuthorParams{
+		{ID: 223,
+			Name: "223"},
+		{ID: 224,
+			Name: "224"},
+		{ID: 225,
+			Name: "225"},
+	})
+	fmt.Println(res, err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	authors, err := queries.GetAuthorsInCompany(context.Background(), gen.GetAuthorsInCompanyParams{
 		ID:   []int32{0, 1},
