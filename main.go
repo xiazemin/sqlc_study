@@ -20,11 +20,11 @@ func main() {
 	queries := gen.New(db)
 
 	res, err := queries.BatchCreateAuthor(context.Background(), []gen.BatchCreateAuthorParams{
-		{ID: 223,
-			Name: "223"},
-		{ID: 224,
+		{ID: 323,
+			Name: "323"},
+		{ID: 324,
 			Name: "224"},
-		{ID: 225,
+		{ID: 325,
 			Name: "225"},
 	})
 	fmt.Println(res, err)
