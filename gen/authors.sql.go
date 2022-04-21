@@ -12,7 +12,7 @@ import (
 const batchCreateAuthor = `-- name: BatchCreateAuthor :execresult
 INSERT INTO authors (
   id,name,bio,company_id,default_col,default_col1
-) VALUES %s
+) VALUES %s ON DUPLICATE KEY UPDATE id=VALUES(id)
 `
 
 type BatchCreateAuthorParams struct {
@@ -27,7 +27,7 @@ type BatchCreateAuthorParams struct {
 
 func (q *Queries) BatchCreateAuthor(ctx context.Context, arg []BatchCreateAuthorParams) (sql.Result, error) {
 
-	batchCreateAuthor := repeatN(batchCreateAuthor, "(?,?,?,1,?,2)", len(arg))
+	batchCreateAuthor := repeatN(batchCreateAuthor, "(?,?,?,1,?,4)", len(arg))
 	var args []interface{}
 	for i := 0; i < len(arg); i++ {
 		args = append(args, arg[i].ID)

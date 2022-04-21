@@ -2,10 +2,10 @@
 INSERT INTO authors (
   id,name,bio,company_id,default_col,default_col1
 ) VALUES (
-  ?,?, ?,1,?,2 
+  ?,?, ?,1,?,4
 ),(
   ?,?, ?,1,? ,2
-);
+) ON DUPLICATE KEY UPDATE id=VALUES(id);
 
 -- name: GetAuthorsInCompanyById :many
 SELECT * FROM authors where company_id in ( select id from company where id in (?) );

@@ -47,7 +47,7 @@ type InsertMultiParams struct {
 
 func (q *Queries) InsertMulti(ctx context.Context, arg []InsertMultiParams) (sql.Result, error) {
 
-	insertMulti := repeatN(insertMulti, "(?,?,?))", len(arg))
+	insertMulti := repeatN(insertMulti, "(?,?,?)", len(arg))
 	var args []interface{}
 	for i := 0; i < len(arg); i++ {
 		args = append(args, arg[i].ID)
